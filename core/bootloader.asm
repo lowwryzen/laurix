@@ -5,20 +5,30 @@ KERNEL_LOCATION equ 0x1000
 DATA_SEG equ 0x10
 CODE_SEG equ 0x08
 
+boot_drive db 0
+
 start:
+    cli
+    mov [boot_drive], dl
+
     xor ax, ax
     mov ds, ax
     mov es, ax
     mov ss, ax
     mov sp, 0x7C00
+    sti
 
     in al, 0x92
     or al, 00000010b
     out 0x92, al
 
 load_kernel:
+    mov ax, 0x07C0
+    mov ds, ax
     mov si, dap
-    mov ah, 0x42    ; load type: LBA
+
+    mov dl, [boot_drive]
+    mov ah, 0x42
     int 0x13
     jc load_kernel_error
 
