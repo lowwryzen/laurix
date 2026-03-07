@@ -10,50 +10,47 @@ static int cursor_x = 0;
 static int cursor_y = 0;
 static uint8_t term_color = 0x0F; // Branco (White)
 
-// Fonte 8x8 Básica (Apenas caracteres imprimíveis essenciais para economizar espaço)
-// Formato: 8 bytes por caractere, bit 1 = pixel aceso
-static const uint8_t font8x8_basic[128][8] = {
-    {0,0,0,0,0,0,0,0}, // 0-31 (Controle - vazio por simplicidade)
-    // ... preencheríamos tudo, mas aqui vai um subset gerado simplificado para ASCII comum
-    // Para brevidade, usaremos um padrão simples: se o código for espaço (32), vazio.
-    // Se for outro, desenhamos um bloco se não tivermos a fonte completa.
-    // *NOTA*: Em um OS real, você incluiria um arquivo font8x8.h completo.
-    // Abaixo, definimos apenas 'A' e 'B' e espaço como exemplo, e um fallback.
+// Fonte 8x8 (Code Page 437) - Subconjunto para demonstração
+static const uint8_t font8x8_subset[256][8] = {
+    [0 ... 255] = {0,0,0,0,0,0,0,0}, // Inicializa tudo com vazio
+    [' '] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+    ['!'] = {0x00, 0x18, 0x3C, 0x3C, 0x18, 0x18, 0x00, 0x18},
+    ['\n'] = {0,0,0,0,0,0,0,0},
+    ['0' ... '9'] = {0,0,0,0,0,0,0,0}, // Placeholder
+    ['A'] = {0x00, 0x18, 0x24, 0x42, 0x7E, 0x42, 0x42, 0x00},
+    ['B'] = {0x00, 0x3C, 0x22, 0x22, 0x3C, 0x22, 0x3C, 0x00},
+    ['G'] = {0x00, 0x3C, 0x40, 0x40, 0x4E, 0x42, 0x3C, 0x00},
+    ['M'] = {0x00, 0x00, 0x42, 0x66, 0x5A, 0x42, 0x42, 0x00},
+    ['O'] = {0x00, 0x3C, 0x42, 0x42, 0x42, 0x42, 0x3C, 0x00},
+    ['S'] = {0x00, 0x3E, 0x40, 0x20, 0x18, 0x04, 0x7C, 0x00},
+    ['T'] = {0x00, 0x7E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x00},
+    ['a'] = {0x00, 0x00, 0x38, 0x44, 0x3C, 0x44, 0x38, 0x00},
+    ['c'] = {0x00, 0x00, 0x3C, 0x40, 0x40, 0x40, 0x3C, 0x00},
+    ['d'] = {0x00, 0x04, 0x04, 0x3C, 0x44, 0x44, 0x3C, 0x00},
+    ['e'] = {0x00, 0x00, 0x3C, 0x4A, 0x4A, 0x48, 0x3C, 0x00},
+    ['f'] = {0x00, 0x1C, 0x22, 0x7E, 0x20, 0x20, 0x20, 0x00},
+    ['h'] = {0x00, 0x40, 0x40, 0x5C, 0x62, 0x42, 0x42, 0x00},
+    ['i'] = {0x00, 0x18, 0x00, 0x18, 0x18, 0x18, 0x18, 0x00},
+    ['m'] = {0x00, 0x00, 0x66, 0x5A, 0x5A, 0x42, 0x42, 0x00},
+    ['n'] = {0x00, 0x00, 0x5C, 0x62, 0x42, 0x42, 0x42, 0x00},
+    ['o'] = {0x00, 0x00, 0x3C, 0x42, 0x42, 0x42, 0x3C, 0x00},
+    ['r'] = {0x00, 0x00, 0x5C, 0x62, 0x40, 0x40, 0x40, 0x00},
+    ['s'] = {0x00, 0x00, 0x3C, 0x40, 0x38, 0x04, 0x78, 0x00},
+    ['v'] = {0x00, 0x00, 0x42, 0x42, 0x24, 0x18, 0x18, 0x00},
+    ['w'] = {0x00, 0x00, 0x42, 0x42, 0x5A, 0x5A, 0x36, 0x00},
 };
 
-// Fonte "VGA" 8x8 simplificada para demonstração (apenas um bloco para debug se não houver fonte completa)
-// Na prática, você deve baixar um array "vga font 8x8 c array" e colar aqui.
-// Vou implementar uma função de desenho que desenha caracteres simples.
-
 void draw_char(int x, int y, char c, uint8_t color) {
-    // Como não podemos incluir 1KB de fonte aqui no chat facilmente,
-    // vamos fazer um desenho "procedural" simples ou usar um quadrado para debug
-    // se não tivermos a fonte.
-    
-    // *SOLUÇÃO*: Vamos desenhar pixels baseados em um mapa de bits fictício
-    // para que você veja algo na tela.
-    
-    // Exemplo de letra 'A' bitmap 8x8
-    static const uint8_t letter_a[8] = {0x18, 0x24, 0x42, 0x42, 0x7E, 0x42, 0x42, 0x00};
-    
-    const uint8_t* glyph = letter_a; // Default para 'A'
-    
-    // Se você tiver o array completo, use: glyph = font8x8_basic[c];
-    
-    // Hack para desenhar o caractere real (necessita de font8x8.h externa idealmente)
-    // Por enquanto, desenha o caractere na posição
+    const uint8_t* glyph = font8x8_subset[(uint8_t)c];
+
     for (int row = 0; row < 8; row++) {
-        // uint8_t row_data = glyph[row]; // Usando o 'A' de exemplo
-        
-        // Fallback: Desenha um retângulo se não for espaço
-        uint8_t row_data = (c == ' ') ? 0x00 : 0xFF; 
-        if (row == 0 || row == 7) row_data = 0x00; // Bordas
+        uint8_t row_data = glyph[row];
 
         for (int col = 0; col < 8; col++) {
             if (row_data & (0x80 >> col)) {
                 vga_put_pixel(x + col, y + row, color);
             } else {
-                vga_put_pixel(x + col, y + row, 0x00); // Fundo preto
+                vga_put_pixel(x + col, y + row, 0x01); // Fundo azul (para combinar com o clear)
             }
         }
     }
@@ -61,7 +58,7 @@ void draw_char(int x, int y, char c, uint8_t color) {
 
 void scroll_terminal() {
     // Implementação simples: limpar tela e resetar cursor (rolagem real requer buffer de memória)
-    vga_clear_screen(0x01); // Limpa com azul escuro
+    vga_clear_screen(0x01); // Limpa com azul
     cursor_x = 0;
     cursor_y = 0;
 }
@@ -88,7 +85,7 @@ void terminal_putchar(char c) {
     }
 
     if (cursor_y >= TERM_HEIGHT) {
-        scroll_terminal();
+        scroll_terminal(); // A rolagem ainda é simples, apenas limpa a tela
     }
 }
 

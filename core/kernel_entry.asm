@@ -9,6 +9,10 @@ extern __bss_end
 ;neste caso, configuramos o .BSS devido que int x; e outras não inicializada são marcadas como NOBITS e não são enviadas no binario final.
 
 entry:
+    ; DEBUG: Imprime 'K' no canto superior esquerdo para confirmar que o kernel rodou
+    mov byte [0xB8000], 'K'
+    mov byte [0xB8001], 0x0F
+
     mov edi, __bss_start
     mov ecx, __bss_end
     sub ecx, edi

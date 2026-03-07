@@ -17,7 +17,7 @@ KERNEL	   = kernel.c
 CFILES   := $(wildcard include/*.c)
 ASMFILES := $(wildcard include/*.asm)
 
-OBJS_C   := $(patsubst include/%.c,$(BUILD)/%.o,$(CFILES)) $(BUILD)/graphics.o $(BUILD)/terminal.o
+OBJS_C   := $(patsubst include/%.c,$(BUILD)/%.o,$(CFILES))
 OBJS_ASM := $(patsubst include/%.asm,$(BUILD)/%.o,$(ASMFILES))
 
 all: compile
@@ -41,12 +41,6 @@ $(BUILD)/kernel.o: $(KERNEL) | $(BUILD)
 
 # Other dependencies
 $(BUILD)/%.o: include/%.c | $(BUILD)
-	$(CC) $(CFLAGS) $< -o $@
-
-$(BUILD)/graphics.o: graphics.c | $(BUILD)
-	$(CC) $(CFLAGS) $< -o $@
-
-$(BUILD)/terminal.o: terminal.c | $(BUILD)
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/%.o: include/%.asm | $(BUILD)

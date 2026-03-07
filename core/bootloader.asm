@@ -23,8 +23,6 @@ start:
     out 0x92, al
 
 load_kernel:
-    mov ax, 0x07C0
-    mov ds, ax
     mov si, dap
 
     mov dl, [boot_drive]

@@ -2,7 +2,6 @@
 #include "ports.h"
 #include "pic.h"
 #include "vga.h"
-#include "../terminal.h"
 #include "utypes.h"
 
 // Mapeamento básico de scancode (US QWERTY) para ASCII.
@@ -28,7 +27,7 @@ void keyboard_handler() {
 
     char c = scancode_to_ascii(scancode);
     if (c) {
-        terminal_putchar(c);
+        vga_putchar(c);
     }
 
     pic_send_eoi(1); // Envia EOI para a IRQ 1 (teclado)

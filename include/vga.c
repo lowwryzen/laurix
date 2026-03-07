@@ -41,8 +41,9 @@ void vga_print_at(int x, int y, const char* s) {
 }
 
 void vga_clear() {
+    uint8_t clear_color_attr = (VGA_BLACK << 4) | VGA_LIGHT_GREY;
     for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
-        vga[i] = (VGA_BLACK << 12) | ' ';
+        vga[i] = (clear_color_attr << 8) | ' ';
     }
     cursor = 0;
 }

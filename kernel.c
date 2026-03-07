@@ -1,7 +1,7 @@
+#include "vga.h"
 #include "idt.h"
 #include "pic.h"
-// #include "ui.h" // Não é necessário ao usar o terminal gráfico
-#include "terminal.h"
+#include "ui.h"
 
 void lau_main() {
     // Configura o manipulador para a exceção de divisão por zero (vetor 0)
@@ -21,10 +21,8 @@ void lau_main() {
 
     load_IDT();
 
-    // Inicializa o modo gráfico e o terminal
-    terminal_init();
-    terminal_print("TasmaOS Grafico!\n");
-    terminal_print("Bem-vindo ao Modo 13h\n");
+    // Garante que a interface seja desenhada
+    draw_terminal_ui();
 
     asm("sti"); // Ativa as interrupções
 

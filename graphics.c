@@ -39,7 +39,7 @@ void vga_set_mode_13h() {
     outb(0x3D4, 0x03); // Select CRTC register 3
     outb(0x3D5, inb(0x3D5) | 0x80); // Read from data port, modify, and write back
     outb(0x3D4, 0x11); // CRTC Unlock
-    outb(0x3D5, *regs & 0x7F); // Remove bit de proteção
+    outb(0x3D5, inb(0x3D5) & 0x7F); // Remove bit de proteção
 
     for(i = 0; i < 25; i++) { // CRTC
         outb(0x3D4, i);
