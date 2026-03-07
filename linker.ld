@@ -27,9 +27,6 @@ SECTIONS
         __bss_end = .;
     }
 
-    .idt :
-    {
-        __idt_start__ =  0xF000;
-         
-    }
+    __idt_start__ = 0xF000;
+    __idt_end__ = __idt_start__ + 256 * 8;
 }
