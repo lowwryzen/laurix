@@ -13,7 +13,16 @@ void vga_set_color(uint8_t fg, uint8_t bg) {
 }
 
 void vga_putchar(char c) {
-    vga[cursor++] = (current_color << 8) | c;
+    if (c == '\n') {
+        cursor += VGA_WIDTH - (cursor % VGA_WIDTH);
+    } else if (c == '\b') {
+        if (cursor > 0) {
+            cursor--;
+            vga[cursor] = (current_color << 8) | ' '; // Apaga o caractere visualmente
+        }
+    } else {
+        vga[cursor++] = (current_color << 8) | c;
+    }
 
     if (cursor >= VGA_WIDTH * VGA_HEIGHT) {
         cursor = 0; // simples por enquanto
@@ -24,4 +33,30 @@ void vga_print(const char* s) {
     for (int i = 0; s[i]; i++) {
         vga_putchar(s[i]);
     }
+}
+
+void vga_putchar_at(int x, int y, char c) {
+    int pos = y * VGA_WIDTH + x;
+    if (pos >= 0 && pos < VGA_WIDTH * VGA_HEIGHT) {
+        vga[pos] = (current_color << 8) | (uint8_t)c;
+    }
+}
+
+void vga_print_at(int x, int y, const char* s) {
+    int old_cursor = cursor;
+    cursor = y * VGA_WIDTH + x;
+    vga_print(s);
+    cursor = old_cursor;
+}
+
+void vga_clear() {
+    uint8_t clear_color_attr = (VGA_BLACK << 4) | VGA_LIGHT_GREY;
+    for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
+        vga[i] = (clear_color_attr << 8) | ' ';
+    }
+    cursor = 0;
+}
+
+void vga_set_cursor(int x, int y) {
+    cursor = y * VGA_WIDTH + x;
 }

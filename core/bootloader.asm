@@ -1,7 +1,7 @@
 [BITS 16]
 [ORG 0x7C00]
 
-KERNEL_LOCATION equ 0x1000
+KERNEL_LOCATION equ 0x8000
 DATA_SEG equ 0x10
 CODE_SEG equ 0x08
 
@@ -9,13 +9,17 @@ boot_drive db 0
 
 start:
     cli
-    mov [boot_drive], dl
-
     xor ax, ax
     mov ds, ax
     mov es, ax
     mov ss, ax
     mov sp, 0x7C00
+
+    mov [boot_drive], dl
+
+    mov ah, 0x0E
+    mov al, 'L'
+    int 0x10
     sti
 
     in al, 0x92
@@ -23,8 +27,6 @@ start:
     out 0x92, al
 
 load_kernel:
-    mov ax, 0x07C0
-    mov ds, ax
     mov si, dap
 
     mov dl, [boot_drive]
@@ -68,9 +70,9 @@ gdt_descriptor:
 dap:
     db 0x10        ; size
     db 0
-    dw 2           ; sector
-    dw KERNEL_LOCATION
-    dw 0x0000
+    dw 32          ; number of sectors to read
+    dw 0x0000      ; destination offset
+    dw KERNEL_LOCATION / 16 ; destination segment (0x8000 / 16 = 0x800)
     dq 1           ; LBA sector
 
 [BITS 32]

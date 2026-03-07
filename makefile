@@ -3,9 +3,9 @@ LD      = ld
 AS      = nasm
 OBJCOPY = objcopy
 
-CFLAGS = -m32 -ffreestanding -fno-pic -fno-pie -fno-stack-protector -nostdlib -nostartfiles -c
+CFLAGS = -m32 -ffreestanding -fno-pic -fno-pie -fno-stack-protector -nostdlib -nostartfiles -c -Iinclude
 
-LDFLAGS = -m elf_i386 -T linker.ld
+LDFLAGS = -m elf_i386 -T linker.ld -z noexecstack
 
 BUILD = build
 INCLUDE = include
@@ -55,10 +55,11 @@ $(BUILD)/kernel.bin: $(BUILD)/kernel.elf
 
 $(BUILD)/kernel.img: $(BUILD)/bootloader.bin $(BUILD)/kernel.bin
 	cat $^ > $@
+	truncate -s 1440k $@
 
 
 run: $(BUILD)/kernel.img
-	qemu-system-i386 $<
+	qemu-system-i386 -drive format=raw,file=$<
 
 clean:
 	rm -rf $(BUILD)
