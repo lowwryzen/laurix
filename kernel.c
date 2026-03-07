@@ -1,6 +1,8 @@
-#include "include/vga.h"
-#include "include/idt.h"
-#include "include/pic.h"
+
+#include "vga.h"
+#include "idt.h"
+#include "pic.h"
+#include "terminal.h"
 
 void lau_main() {
     // Configura o manipulador para a exceção de divisão por zero (vetor 0)
@@ -8,6 +10,9 @@ void lau_main() {
 
     // Configura o manipulador para General Protection Fault (vetor 13)
     set_idt_entry(&ir13, (uint8_t)0x8E, (uint8_t)13);
+
+    // Configura o manipulador para Page Fault (vetor 14)
+    set_idt_entry(&ir14, (uint8_t)0x8E, (uint8_t)14);
 
     // Remapeia o PIC para que os IRQs comecem no vetor 32
     pic_remap();
@@ -17,6 +22,12 @@ void lau_main() {
 
     load_IDT();
 
+    // Inicializa o modo gráfico e o terminal
+    terminal_init();
+    terminal_print("TasmaOS Grafico!\n");
+    terminal_print("Bem-vindo ao Modo 13h\n");
+
     asm("sti"); // Ativa as interrupções
+
     while(1);
 }

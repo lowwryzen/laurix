@@ -3,7 +3,7 @@ LD      = ld
 AS      = nasm
 OBJCOPY = objcopy
 
-CFLAGS = -m32 -ffreestanding -fno-pic -fno-pie -fno-stack-protector -nostdlib -nostartfiles -c
+CFLAGS = -m32 -ffreestanding -fno-pic -fno-pie -fno-stack-protector -nostdlib -nostartfiles -c -Iinclude
 
 LDFLAGS = -m elf_i386 -T linker.ld
 
@@ -17,7 +17,7 @@ KERNEL	   = kernel.c
 CFILES   := $(wildcard include/*.c)
 ASMFILES := $(wildcard include/*.asm)
 
-OBJS_C   := $(patsubst include/%.c,$(BUILD)/%.o,$(CFILES))
+OBJS_C   := $(patsubst include/%.c,$(BUILD)/%.o,$(CFILES)) $(BUILD)/graphics.o $(BUILD)/terminal.o
 OBJS_ASM := $(patsubst include/%.asm,$(BUILD)/%.o,$(ASMFILES))
 
 all: compile
@@ -41,6 +41,12 @@ $(BUILD)/kernel.o: $(KERNEL) | $(BUILD)
 
 # Other dependencies
 $(BUILD)/%.o: include/%.c | $(BUILD)
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD)/graphics.o: graphics.c | $(BUILD)
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD)/terminal.o: terminal.c | $(BUILD)
 	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD)/%.o: include/%.asm | $(BUILD)
