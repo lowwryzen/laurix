@@ -25,3 +25,28 @@ void vga_print(const char* s) {
         vga_putchar(s[i]);
     }
 }
+
+void vga_putchar_at(int x, int y, char c) {
+    int pos = y * VGA_WIDTH + x;
+    if (pos >= 0 && pos < VGA_WIDTH * VGA_HEIGHT) {
+        vga[pos] = (current_color << 8) | (uint8_t)c;
+    }
+}
+
+void vga_print_at(int x, int y, const char* s) {
+    int old_cursor = cursor;
+    cursor = y * VGA_WIDTH + x;
+    vga_print(s);
+    cursor = old_cursor;
+}
+
+void vga_clear() {
+    for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
+        vga[i] = (VGA_BLACK << 12) | ' ';
+    }
+    cursor = 0;
+}
+
+void vga_set_cursor(int x, int y) {
+    cursor = y * VGA_WIDTH + x;
+}
