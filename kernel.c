@@ -1,8 +1,7 @@
-#include "include/vga.h"
-#include "vga.h"
 #include "idt.h"
 #include "pic.h"
-#include "ui.h"
+// #include "ui.h" // Não é necessário ao usar o terminal gráfico
+#include "terminal.h"
 
 void lau_main() {
     // Configura o manipulador para a exceção de divisão por zero (vetor 0)
