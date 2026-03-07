@@ -13,7 +13,16 @@ void vga_set_color(uint8_t fg, uint8_t bg) {
 }
 
 void vga_putchar(char c) {
-    vga[cursor++] = (current_color << 8) | c;
+    if (c == '\n') {
+        cursor += VGA_WIDTH - (cursor % VGA_WIDTH);
+    } else if (c == '\b') {
+        if (cursor > 0) {
+            cursor--;
+            vga[cursor] = (current_color << 8) | ' '; // Apaga o caractere visualmente
+        }
+    } else {
+        vga[cursor++] = (current_color << 8) | c;
+    }
 
     if (cursor >= VGA_WIDTH * VGA_HEIGHT) {
         cursor = 0; // simples por enquanto

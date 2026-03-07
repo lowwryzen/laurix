@@ -3,6 +3,7 @@
 #include "pic.h"
 #include "vga.h"
 #include "utypes.h"
+#include "shell.h"
 
 // Mapeamento básico de scancode (US QWERTY) para ASCII.
 static const char scancode_to_ascii_map[128] = {
@@ -27,7 +28,7 @@ void keyboard_handler() {
 
     char c = scancode_to_ascii(scancode);
     if (c) {
-        vga_putchar(c);
+        shell_input(c);
     }
 
     pic_send_eoi(1); // Envia EOI para a IRQ 1 (teclado)

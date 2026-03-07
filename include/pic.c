@@ -30,9 +30,24 @@ void pic_remap() {
     outb(PIC1_DATA, ICW4_8086);
     outb(PIC2_DATA, ICW4_8086);
 
-    // Limpa as máscaras (ativa todas as IRQs)
-    outb(PIC1_DATA, 0);
-    outb(PIC2_DATA, 0);
+    // Mascara todas as interrupções. Vamos ativá-las seletivamente.
+    outb(PIC1_DATA, 0xFF);
+    outb(PIC2_DATA, 0xFF);
+}
+
+void pic_enable_irq(unsigned char irq) {
+    uint16_t port;
+    uint8_t value;
+
+    if(irq < 8) {
+        port = PIC1_DATA;
+    } else {
+        port = PIC2_DATA;
+        irq -= 8;
+    }
+    // Lê a máscara atual, inverte o bit da IRQ desejada (0=habilitado) e escreve de volta.
+    value = inb(port) & ~(1 << irq);
+    outb(port, value);
 }
 
 void pic_send_eoi(unsigned char irq) {
