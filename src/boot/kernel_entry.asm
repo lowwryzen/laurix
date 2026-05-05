@@ -1,4 +1,5 @@
 [BITS 32]
+
 global entry
 extern lau_main
 extern __bss_start
@@ -9,6 +10,8 @@ extern __bss_end
 ;neste caso, configuramos o .BSS devido que int x; e outras não inicializada são marcadas como NOBITS e não são enviadas no binario final.
 
 entry:
+    cli
+
     mov edi, __bss_start
     mov ecx, __bss_end
     sub ecx, edi
@@ -17,4 +20,6 @@ entry:
     rep stosb
 
     call lau_main
+
+kernel_return:
     jmp $
