@@ -2,7 +2,7 @@ ENTRY(entry)
 
 SECTIONS
 {
-    . = 0x1000;
+    . = 0x10000;
 
     .text :
     {
@@ -25,11 +25,5 @@ SECTIONS
         *(.bss*)
         *(COMMON)
         __bss_end = .;
-    }
-
-    .idt :
-    {
-        __idt_start__ =  0xF000;
-         
     }
 }

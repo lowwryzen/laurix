@@ -1,4 +1,8 @@
 .vscode
+# Clangd
+compile_commands.json
+.cache
+
 # build artifacts
 build/
 *.bin
