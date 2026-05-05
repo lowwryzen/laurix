@@ -1,7 +1,7 @@
 #ifndef VGA_H
 #define VGA_H
 
-#include "utypes.h"
+#include <utypes.h>
 
 enum vga_color {
     VGA_BLACK = 0x0,
