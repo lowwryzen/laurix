@@ -1,0 +1,9 @@
+.vscode
+# build artifacts
+build/
+*.bin
+*.img
+*.elf
+*.o
+
+laurix/
