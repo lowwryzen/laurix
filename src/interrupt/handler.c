@@ -6,3 +6,17 @@ void division_error_handler(){
 
     asm("hlt");
 }
+
+void keyboard_handler(){
+    vga_set_color(VGA_WHITE, VGA_BLACK);
+    uint8_t key;
+
+    asm(
+        "inb $0x60, %%al\n"
+        "movb %[key_pressed], %%al"
+        : [key_pressed] "=r" (key)
+        : 
+    );
+
+    vga_putchar(key+65-28);
+}

@@ -1,15 +1,19 @@
 #include "vga/vga.h"
 #include "idt/idt.h"
 
+extern void pic_remap();
+
 void lau_main() {
     set_idt_entry(&ir0, (uint8_t)0x8E, (uint8_t)0);
+    set_idt_entry(&ir21, (uint8_t)0x8E, (uint8_t)0x21);
 
     load_IDT();
 
-    vga_print("Bomdia cidadaos");
+    vga_set_color(VGA_CYAN, VGA_BLACK);
+    vga_print("Welcome to laurix");
 
-    volatile int a = 10/0;
-    a = 0;
+    pic_remap();
+    asm("sti");
 
     while(1);
 }

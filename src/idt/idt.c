@@ -2,17 +2,16 @@
 #include "vga/vga.h"
 
 volatile uint16_t idt_entries[256][4];
+volatile uint16_t idtr[2];
 
 void load_IDT(){
-    __asm__(
-        "idtr:\n"
-        "   .word 2047\n"
-        "   .long %[idt_addr]\n"
+    uint32_t addr = (uint32_t)idt_entries;
 
-        "lidt [idtr]"
-        :  
-        :   [idt_addr] "m" (idt_entries)
-    );
+    idtr[0] = 256*8-1;
+    idtr[1] = (uint16_t)addr;
+    idtr[2] = (uint16_t)(addr >> 16);
+
+    asm("lidt %[idtr]" : : [idtr] "m" (idtr));
 }
 
 void set_idt_entry(void *isr, uint8_t flags, uint8_t index){
