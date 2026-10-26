@@ -1,4 +1,5 @@
 #include "interrupt/handler.h"
+#include "shell/keyboard.h"
 
 void division_error_handler(){
     vga_set_color(VGA_LIGHT_RED, VGA_BLACK);
@@ -9,6 +10,7 @@ void division_error_handler(){
 
 void keyboard_handler(){
     vga_set_color(VGA_WHITE, VGA_BLACK);
+
     uint8_t key;
 
     asm(
@@ -18,5 +20,5 @@ void keyboard_handler(){
         : 
     );
 
-    vga_putchar(key+65-28);
+    read_key(key);
 }

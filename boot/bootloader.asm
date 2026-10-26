@@ -123,7 +123,7 @@ gdt_descriptor:
 dap:
     db 0x10        ; size
     db 0
-    dw 2           ; sector
+    dw 5           ; sector
     dw KERNEL_LOCATION
     dw 0x0000
     dq 1           ; LBA sector
@@ -143,14 +143,15 @@ protected_mode_entry:
 [BITS 16]
 
 load_kernel_error:
+    mov cl, ah
+    
     mov si, load_error_msg
     call println
     
     mov si, error_code_msg
     call println
 
-    mov al, ah
-
+    mov al, cl
     mov ah, 0x0E
     int 0x10
     jmp $
@@ -216,7 +217,8 @@ not_lba_msg db "LBA not supported", 0
 load_successful db "laurix kernel loaded sucessfully", 0
 init_gdt_msg db "initializing GDT and entering protected mode", 0
 
-error_code_msg db "Error code: ",0
+error_code_msg db "Error code: ", 0
+error_code_buff db "000", 0
 
 times 510 - ($ - $$) db 0
 dw 0xAA55	 

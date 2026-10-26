@@ -22,8 +22,12 @@ enum vga_color {
     VGA_WHITE = 0xF,
 };
 
+uint16_t get_current_vga();
+
 void vga_set_color(uint8_t fg, uint8_t bg);
 void vga_putchar(char c);
 void vga_print(const char* s);
+void vga_println(const char* s);
+void vga_clean(uint16_t back);
 
 #endif

@@ -1,6 +1,8 @@
 #include "vga/vga.h"
 #include "idt/idt.h"
 
+#include "shell/shell.h"
+
 extern void pic_remap();
 
 void lau_main() {
@@ -10,10 +12,10 @@ void lau_main() {
     load_IDT();
 
     vga_set_color(VGA_CYAN, VGA_BLACK);
-    vga_print("Welcome to laurix");
+    vga_println("Welcome to laurix");
 
     pic_remap();
     asm("sti");
 
-    while(1);
+    init_shell();
 }
